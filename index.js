@@ -52,6 +52,8 @@ exports.clientOutreachEmail = async (req, res) => {
                         updatedFields
                     );
                 }
+
+                console.log(`Client: ${campaign.Client} | Campaign: ${campaign.Campaign}`);
             } else {
                 // update campaign
                 await Airtable.updateCampaign(campaign.recordID, {

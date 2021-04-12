@@ -38,9 +38,6 @@ module.exports = {
     campaignsToRun(campaigns) {
         let activeCampaigns = [];
 
-        // campaigns = this.liveCampaigns(campaigns);
-        // campaigns = this.campaignsDueToday(campaign);
-
         let clients = campaigns.map((campaign) => campaign.Client);
 
         let individualClients = new Set(clients);
