@@ -81,7 +81,7 @@ module.exports = class AirtableApi {
 
             const res = await base("First Line Ready")
                 .select({
-                    maxRecords: 1,
+                    maxRecords: 10,
                     filterByFormula: "({Mailshake Ready} = 1)",
                     view,
                 })
@@ -105,33 +105,6 @@ module.exports = class AirtableApi {
             await base("First Line Ready").update(recordID, updatedFields);
         } catch (error) {
             console.log("ERROR UPDATECONTACTS() ---", error);
-        }
-    }
-
-    airtableToMailshake(contacts) {
-        try {
-            return contacts.map((contact) => {
-                return {
-                    emailAddress: contact.email_first || contact.Email,
-                    fullName: contact.first_name || contact["First Name"],
-                    fields: {
-                        city: contact.city || contact.City || "",
-                        company:
-                            contact.company_name ||
-                            contact["Company Name"] ||
-                            contact.Company ||
-                            "",
-                        "First Line": contact["First Line"] || contact["FIRST LINE"] || "",
-                        job: contact.job_title || contact.Job || "",
-                        "First Name": contact.first_name || contact["First Name"],
-                        "Last Name": contact.last_name || contact["Last Name"],
-                        "LinkedIn Page": contact.url || contact["LinkedIn Page"] || "",
-                        recordID: contact.recordID,
-                    },
-                };
-            });
-        } catch (error) {
-            console.log("ERROR AIRTABLETOMAILSHAKE() ---", error);
         }
     }
 };

@@ -53,13 +53,19 @@ exports.clientOutreachEmail = async (req, res) => {
                     );
                 }
 
-                console.log(`Client: ${campaign.Client} | Campaign: ${campaign.Campaign}`);
+                console.log(
+                    `Client: ${campaign.Client} | Campaign: ${campaign.Campaign} - SUCCESS`
+                );
             } else {
                 // update campaign
                 await Airtable.updateCampaign(campaign.recordID, {
                     "Campaign Status": "Need More Contacts",
                     "Last Updated": today,
                 });
+
+                console.log(
+                    `Client: ${campaign.Client} | Campaign: ${campaign.Campaign} - Need More Contacts`
+                );
             }
         }
 
