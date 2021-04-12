@@ -107,4 +107,26 @@ module.exports = class AirtableApi {
             console.log("ERROR UPDATECONTACTS() ---", error);
         }
     }
+
+    async hasProspects(baseID, view) {
+        try {
+            const base = await this.assignAirtable(baseID);
+
+            const res = await base("First Line Ready")
+                .select({
+                    maxRecords: 10,
+                    view,
+                })
+                .firstPage();
+
+            const contacts = res.map((contact) => ({
+                ...contact.fields,
+                recordID: contact.getId(),
+            }));
+
+            return contacts.length > 0 ? true : false;
+        } catch (error) {
+            console.log("ERROR NEEDMORECONTACTS() ---", error);
+        }
+    }
 };

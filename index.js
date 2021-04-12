@@ -57,15 +57,19 @@ exports.clientOutreachEmail = async (req, res) => {
                     `Client: ${campaign.Client} | Campaign: ${campaign.Campaign} - SUCCESS`
                 );
             } else {
-                // update campaign
-                await Airtable.updateCampaign(campaign.recordID, {
-                    "Campaign Status": "Need More Contacts",
-                    "Last Updated": today,
-                });
+                // check if need more contacts
+                const prospects = await Airtable.hasProspects(campaign["Base ID"], view);
 
-                console.log(
-                    `Client: ${campaign.Client} | Campaign: ${campaign.Campaign} - Need More Contacts`
-                );
+                if (!prospects) {
+                    await Airtable.updateCampaign(campaign.recordID, {
+                        "Campaign Status": "Need More Contacts",
+                        "Last Updated": today,
+                    });
+
+                    console.log(
+                        `Client: ${campaign.Client} | Campaign: ${campaign.Campaign} - Need More Contacts`
+                    );
+                }
             }
         }
 
