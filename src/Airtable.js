@@ -40,7 +40,7 @@ module.exports = class AirtableApi {
         try {
             const base = await this.assignAirtable("appGB7S9Wknu6MiQb");
 
-            const res = await base("Campaigns").select({ view: "Email" }).firstPage();
+            const res = await base("Campaigns").select({ view: "Email - HL" }).all();
 
             const campaigns = res.map((campaign) => {
                 return {
@@ -97,6 +97,7 @@ module.exports = class AirtableApi {
             return contacts.length > 0 ? contacts : false;
         } catch (error) {
             console.log("ERROR GETCONTACTS() ---", error);
+            return false;
         }
     }
 
