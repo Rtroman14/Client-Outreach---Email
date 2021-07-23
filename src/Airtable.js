@@ -69,7 +69,9 @@ module.exports = class AirtableApi {
         try {
             const base = await this.assignAirtable(baseID);
 
-            return await (await base("First Line Ready").find(recordID)).fields;
+            return await (
+                await base("First Line Ready").find(recordID)
+            ).fields;
         } catch (error) {
             console.log("ERROR GETCONTACTS() ---", error);
         }
@@ -82,7 +84,7 @@ module.exports = class AirtableApi {
             const res = await base("First Line Ready")
                 .select({
                     maxRecords: 10,
-                    filterByFormula: "({Mailshake Ready} = 1)",
+                    // filterByFormula: "({Mailshake Ready} = 1)",
                     view,
                 })
                 .firstPage();

@@ -12,9 +12,15 @@ const { liveCampaigns, campaignsToRun, mapContact, campaignsDueToday } = require
 
 (async () => {
     try {
-        const prospects = await Airtable.hasProspects("appPfAkOluijuGY1T", "First Lines");
+        const getCampaigns = await Airtable.getCampaigns();
+        let campaigns = liveCampaigns(getCampaigns);
+        campaigns = campaignsDueToday(campaigns);
+        campaigns = campaignsToRun(campaigns).map((campaign) => ({
+            // client: campaign.Client,
+            campaign: campaign.Campaign,
+        }));
 
-        console.log(prospects);
+        console.log(campaigns);
     } catch (error) {
         console.log(error);
     }

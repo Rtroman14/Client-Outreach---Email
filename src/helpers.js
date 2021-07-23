@@ -16,7 +16,10 @@ module.exports = {
                 "API Token" in campaign &&
                 "Campaign ID" in campaign
             ) {
-                if (campaign["Campaign Status"] === "Live") {
+                if (
+                    campaign["Campaign Status"] === "Live" ||
+                    campaign["Campaign Status"] === "Need More Contacts"
+                ) {
                     return campaign;
                 }
             }
@@ -35,60 +38,105 @@ module.exports = {
         });
     },
 
+    // campaignsToRun(campaigns) {
+    //     let activeCampaigns = [];
+
+    //     let clients = campaigns.map((campaign) => campaign.Client);
+
+    //     let individualClients = new Set(clients);
+
+    //     individualClients.forEach((client) => {
+    //         // new array of client's campaigns
+    //         const clientCampaigns = campaigns.filter((campaign) => campaign.Client === client);
+
+    //         // add campaign if only one
+    //         if (clientCampaigns.length < 2) {
+    //             activeCampaigns.push(clientCampaigns[0]);
+    //         } else {
+    //             // add Type === "Specific" campaigns
+    //             clientCampaigns.forEach((campaign) => {
+    //                 if ("Type" in campaign && campaign.Type === "Specific") {
+    //                     activeCampaigns.push(campaign);
+    //                 }
+    //             });
+
+    //             // campaigns without tag
+    //             let alternateCampaigns = clientCampaigns.filter((campaign) => {
+    //                 if (!("Tag" in campaign)) {
+    //                     return campaign;
+    //                 }
+    //             });
+
+    //             // campaigns with tag
+    //             let alternateCampaignTags = clientCampaigns.filter((campaign) => {
+    //                 if ("Tag" in campaign && !("Type" in campaign)) {
+    //                     return campaign;
+    //                 }
+    //             });
+
+    //             // !!IMPORTANT - need to check if "Last Update" is empty and add that campaign
+
+    //             // add campaign with furthest date
+    //             const [nextCampaign] = alternateCampaigns.sort(
+    //                 (a, b) => new Date(a["Last Updated"]) - new Date(b["Last Updated"])
+    //             );
+
+    //             // add campaign with furthest date
+    //             const [nextCampaignTag] = alternateCampaignTags.sort(
+    //                 (a, b) => new Date(a["Last Updated"]) - new Date(b["Last Updated"])
+    //             );
+
+    //             nextCampaign && activeCampaigns.push(nextCampaign);
+    //             nextCampaignTag && activeCampaigns.push(nextCampaignTag);
+    //         }
+    //     });
+
+    //     return activeCampaigns;
+    // },
+
     campaignsToRun(campaigns) {
-        let activeCampaigns = [];
+        let emailCampaigns = [];
 
-        let clients = campaigns.map((campaign) => campaign.Client);
+        campaigns.forEach((campaign) => {
+            // check if client is in emailCampaigns
+            const isClientPresent = emailCampaigns.some(
+                (newCampaign) => newCampaign.Client === campaign.Client
+            );
 
-        let individualClients = new Set(clients);
+            if ("Type" in campaign && campaign.Type === "Specific") {
+                return emailCampaigns.push(campaign);
+            }
 
-        individualClients.forEach((client) => {
-            // new array of client's campaigns
-            const clientCampaigns = campaigns.filter((campaign) => campaign.Client === client);
+            // check if multiple same clients exist in campaigns
+            const clientCampaigns = campaigns.filter((obj) => {
+                if (!("Type" in obj)) {
+                    return obj.Client === campaign.Client;
+                }
+            });
 
-            // add campaign if only one
-            if (clientCampaigns.length < 2) {
-                activeCampaigns.push(clientCampaigns[0]);
-            } else {
-                // add Type === "Specific" campaigns
-                clientCampaigns.forEach((campaign) => {
-                    if ("Type" in campaign && campaign.Type === "Specific") {
-                        activeCampaigns.push(campaign);
+            if (clientCampaigns.length > 1 && !isClientPresent) {
+                let clientAdded = false;
+
+                clientCampaigns.some((obj) => {
+                    if (!("Last Updated" in obj)) {
+                        clientAdded = true;
+                        return emailCampaigns.push(obj);
                     }
                 });
 
-                // campaigns without tag
-                let alternateCampaigns = clientCampaigns.filter((campaign) => {
-                    if (!("Tag" in campaign)) {
-                        return campaign;
-                    }
-                });
-
-                // campaigns with tag
-                let alternateCampaignTags = clientCampaigns.filter((campaign) => {
-                    if ("Tag" in campaign && !("Type" in campaign)) {
-                        return campaign;
-                    }
-                });
-
-                // !!IMPORTANT - need to check if "Last Update" is empty and add that campaign
-
-                // add campaign with furthest date
-                const [nextCampaign] = alternateCampaigns.sort(
+                const [nextCampaign] = clientCampaigns.sort(
                     (a, b) => new Date(a["Last Updated"]) - new Date(b["Last Updated"])
                 );
 
-                // add campaign with furthest date
-                const [nextCampaignTag] = alternateCampaignTags.sort(
-                    (a, b) => new Date(a["Last Updated"]) - new Date(b["Last Updated"])
-                );
+                !clientAdded && emailCampaigns.push(nextCampaign);
+            }
 
-                nextCampaign && activeCampaigns.push(nextCampaign);
-                nextCampaignTag && activeCampaigns.push(nextCampaignTag);
+            if (clientCampaigns.length === 1) {
+                emailCampaigns.push(campaign);
             }
         });
 
-        return activeCampaigns;
+        return emailCampaigns;
     },
 
     mapContact(contacts) {
