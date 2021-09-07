@@ -7,6 +7,8 @@ const MailShakeApi = require("./src/Mailshake");
 const AirtableApi = require("./src/Airtable");
 const HighlevelApi = require("./src/Highlevel");
 
+const slackNotification = require("./src/slackNotification");
+
 const Airtable = new AirtableApi(process.env.AIRTABLE_API_KEY);
 
 const { liveCampaigns, campaignsToRun, mapContact, campaignsDueToday } = require("./src/helpers");
@@ -18,12 +20,7 @@ const { liveCampaigns, campaignsToRun, mapContact, campaignsDueToday } = require
         campaigns = campaignsDueToday(campaigns);
         campaigns = campaignsToRun(campaigns);
 
-        const campaign = campaigns[0];
-
-        const Highlevel = new HighlevelApi(campaign["API Token"]);
-        const contact = await Airtable.getContact(campaign["Base ID"], "recG2JDY1LRzBzMcf");
-
-        // const highlevelContact = await Highlevel.makeHighlevelContact(contact);
+        await slackNotification("This is a test");
     } catch (error) {
         console.log(error);
     }
