@@ -73,7 +73,7 @@ exports.clientOutreachEmail = async (req, res) => {
             }
         }
 
-        await slackNotification("Emails were sent for view=Email campaigns.");
+        await slackNotification("Emails were sent for campaigns in view=Email.");
 
         res.status(200).send(campaigns);
     } catch (error) {
