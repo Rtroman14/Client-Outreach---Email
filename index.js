@@ -8,6 +8,8 @@ const AirtableApi = require("./src/Airtable");
 
 const Airtable = new AirtableApi(process.env.AIRTABLE_API_KEY);
 
+const slackNotification = require("./src/slackNotification");
+
 const { liveCampaigns, campaignsToRun, mapContact, campaignsDueToday } = require("./src/helpers");
 
 exports.clientOutreachEmail = async (req, res) => {
